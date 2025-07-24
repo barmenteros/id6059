@@ -39,6 +39,7 @@ double GetADXJesseValue(const int buffer, const int index = 0)
                    ADXLevel,
                    Buy_ADX_Price,
                    Sell_ADX_Price,
+                   " ",
                    ADXuserProgramID,
                    buffer, index);
 }

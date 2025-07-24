@@ -8,7 +8,7 @@
 #property copyright "Copyright © 2023, JLTHAKAD LLC"
 #property link      "jesse.fields92@gmail.com"
 #define EA_NAME     "THA KAD - ZARIUM CORE EA"
-#define EA_VERSION  "5.60"
+#define EA_VERSION  "5.70"
 #property version   EA_VERSION
 #property strict
 

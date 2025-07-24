@@ -188,46 +188,30 @@ SignalInfo UpdateAndEvaluateEntrySignals(
         currentOrderSettings = ProcessSellArrowSignal(currentOrderSettings, reverseOrdersEnabled);
     }
 
-// Check ADX filter first (proactive gate)
-    bool adxAllowsBuy = IsTradeAllowedByADX(OP_BUY, 1);
-    bool adxAllowsSell = IsTradeAllowedByADX(OP_SELL, 1);
+// Get the entry signals from the breakeven filter
+    SignalInfo signalInfo = EvaluateBreakevenFilterForSignals(enableBeFilter, enableBeReentry, onNewBar, lastPrice, currentPrice, breakevenPrice,
+                            buyBETextToDisplay, sellBETextToDisplay);
 
-// Log ADX status if enabled
-    if (EnableADXForArrowConfirmation) {
-        if (!adxAllowsBuy) {
+// Apply ADX filtering to the buy/sell signals from BE filter
+    if (signalInfo.buyAllowed || signalInfo.sellAllowed) {
+        // Check ADX filter for buy signals
+        if (signalInfo.buyAllowed && !IsTradeAllowedByADX(OP_BUY, 1)) {
+            signalInfo.buyAllowed = false;
             string adxStatus = GetADXFilterStatus(1);
-            PrintLog(__FUNCTION__, StringFormat("Buy trades blocked by ADX Filter: %s", adxStatus), true);
+            PrintLog(__FUNCTION__, StringFormat("Buy signal dismissed by ADX Filter: %s", adxStatus), true);
         }
-        if (!adxAllowsSell) {
+
+        // Check ADX filter for sell signals
+        if (signalInfo.sellAllowed && !IsTradeAllowedByADX(OP_SELL, 1)) {
+            signalInfo.sellAllowed = false;
             string adxStatus = GetADXFilterStatus(1);
-            PrintLog(__FUNCTION__, StringFormat("Sell trades blocked by ADX Filter: %s", adxStatus), true);
+            PrintLog(__FUNCTION__, StringFormat("Sell signal dismissed by ADX Filter: %s", adxStatus), true);
         }
-    }
 
-// Only evaluate zone signals if ADX permits at least one direction
-    SignalInfo signalInfo;
-    if (adxAllowsBuy || adxAllowsSell) {
-        signalInfo = EvaluateBreakevenFilterForSignals(enableBeFilter, enableBeReentry, onNewBar, lastPrice, currentPrice, breakevenPrice,
-                     buyBETextToDisplay, sellBETextToDisplay);
-
-        // Apply ADX restrictions to final results
-        signalInfo.buyAllowed = signalInfo.buyAllowed && adxAllowsBuy;
-        signalInfo.sellAllowed = signalInfo.sellAllowed && adxAllowsSell;
-
-        // Log final ADX approval
+        // Log ADX filter approval if enabled and signals passed
         if (EnableADXForArrowConfirmation && (signalInfo.buyAllowed || signalInfo.sellAllowed)) {
             string adxStatus = GetADXFilterStatus(1);
             PrintLog(__FUNCTION__, StringFormat("Signal(s) approved by ADX Filter: %s", adxStatus), true);
-        }
-    }
-    else {
-        // No ADX permission for either direction - initialize empty signals
-        signalInfo.buyAllowed = false;
-        signalInfo.sellAllowed = false;
-        signalInfo.buyEntry = false;
-        signalInfo.sellEntry = false;
-        if (EnableADXForArrowConfirmation) {
-            PrintLog(__FUNCTION__, "All trades blocked by ADX Filter", true);
         }
     }
 
