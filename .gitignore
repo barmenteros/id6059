@@ -1,0 +1,13 @@
+# MQL4/MQL5 compiled files
+*.ex4
+*.ex5
+
+# MetaTrader project files (optional - uncomment if you want to ignore)
+# *.mqproj
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
