@@ -141,12 +141,6 @@ int OnInit()
 
     InitializeInfoPanel();
 
-// Test ADX connectivity (can be removed in production)
-    if (!TestADXIndicatorConnectivity()) {
-        PrintLog(__FUNCTION__, "ADX indicator test failed - check ADX_Jesse.mq4 attachment", true);
-        // Continue anyway - don't fail initialization
-    }
-
     return INIT_SUCCEEDED;
 }
 //+------------------------------------------------------------------+
